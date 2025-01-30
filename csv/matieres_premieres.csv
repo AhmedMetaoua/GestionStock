@@ -1,0 +1,10 @@
+id,nom,reference,quantite,prix_unitaire
+2,rouge,ROUGE,10.0,5.0
+3,vert,VERT,15.0,5.0
+4,bleu,BLEU,13.8,8.0
+6,jaune,JAUNE,7.5,10.0
+7,eau,h2o,1460.0,12.0
+8,hypochlorite,ch3,1455.0,12.0
+9,test,test,320.0,20.0
+10,test1,test1,20.0,25.0
+11,test.exe,test.exe,28.0,5.0

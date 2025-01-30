@@ -1,0 +1,9 @@
+id,matiere_produite_reference,matiere_premiere_id,proportion
+1,REF-ORANGE,2,0.5
+2,REF-ORANGE,6,0.5
+3,REF-VIOLET,2,0.3
+4,REF-VIOLET,4,0.7
+5,REF-JAVEL,7,0.9
+6,REF-JAVEL,8,0.1
+7,REF-TEST,9,2.0
+8,REF-TEST.EXE,11,1.0

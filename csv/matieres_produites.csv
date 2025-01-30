@@ -1,0 +1,7 @@
+id,nom,reference,quantite,prix_unitaire,fodec
+3,orange,REF-ORANGE,3.0,10.0,-1
+4,violet,REF-VIOLET,2.0,23.0,-1
+5,javel,REF-JAVEL,200.0,0.5,1
+6,test,REF-TEST,89.0,15.0,1
+7,test.exe,REF-TEST.EXE,4.0,5.0,-1
+8,testAjout,REF-TESTAJOUT,88.0,8.0,1
