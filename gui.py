@@ -419,41 +419,77 @@ def lancer_interface():
         matiere_produite_combobox = ttk.Combobox(frame_principale, values=matieres_produites, font=("Arial", 16))
         matiere_produite_combobox.pack(ipadx=10, ipady=5, pady=10)
 
-        # Section pour les matières premières et quantités
-        tk.Label(frame_principale, text="Matière Première (Nom)         Quantité (Kg/Litre)", bg=BG_COLOR, font=("Arial", 16)).pack()
-        matieres_frame = tk.Frame(frame_principale, bg=BG_COLOR)
-        matieres_frame.pack(pady=10)
+        # Table pour afficher les matières premières ajoutées
+        table_frame = tk.Frame(frame_principale)
+        table_frame.pack(pady=10, padx=20)
+
+        scrollbar = ttk.Scrollbar(table_frame, orient="vertical")
+        scrollbar.pack(side="right", fill="y")
+
+        columns = ("Matière Première", "Quantité (Kg/Litre)")
+        treeview = ttk.Treeview(table_frame, columns=columns, show="headings", height=4, yscrollcommand=scrollbar.set)
+
+        for col in columns:
+            treeview.heading(col, text=col, anchor="center")
+            treeview.column(col, anchor="center", width=180)
+
+        treeview.pack(side="left", fill="both", expand=True)
+        scrollbar.config(command=treeview.yview)
 
         matieres_premieres = get_suggestions("matieres_premieres", "nom")
 
-        def ajouter_matiere_premiere():
-            frame = tk.Frame(matieres_frame, bg=BG_COLOR)
-            frame.pack(fill="x", pady=5)
+        tk.Label(frame_principale, text="Matière Première :", bg=BG_COLOR, font=("Arial", 14)).pack()
+        matiere_premiere_combobox = ttk.Combobox(frame_principale, values=matieres_premieres, font=("Arial", 14))
+        matiere_premiere_combobox.pack(ipadx=10, ipady=5, pady=5)
 
-            matiere_premiere_combobox = ttk.Combobox(frame, values=matieres_premieres, font=("Arial", 14), width=30)
-            matiere_premiere_combobox.pack(side="left", padx=5)
+        tk.Label(frame_principale, text="Quantité (Kg ou Litre):", bg=BG_COLOR, font=("Arial", 14)).pack()
+        quantite_entry = tk.Entry(frame_principale, font=("Arial", 14))
+        quantite_entry.pack(ipadx=10, ipady=5, pady=5)
 
-            quantite_entry = tk.Entry(frame, bg=ENTRY_BG, fg=ENTRY_FG, font=("Arial", 14), width=10)
-            quantite_entry.pack(side="left", padx=5)
-            def valid(P):
-                try:
-                    if P == "":
-                        return True
-                    float(P)
+        def valid(P):
+            try:
+                if P == "":
                     return True
-                except ValueError:
-                    return False
-            
-            vcmd_quantite = frame_principale.register(valid)
-            quantite_entry.config(validate="key", validatecommand=(vcmd_quantite, "%P"))
+                float(P)
+                return True
+            except ValueError:
+                return False
+        
+        vcmd_quantite = frame_principale.register(valid)
+        quantite_entry.config(validate="key", validatecommand=(vcmd_quantite, "%P"))
 
-            remove_button = tk.Button(frame, text="X", font=("Arial", 12, "bold"), bg="red", fg="white",
-                                    command=lambda: frame.destroy())
-            remove_button.pack(side="left", padx=5)
+        def ajouter_matiere_premiere():
+            matiere_premiere = matiere_premiere_combobox.get()
+            quantite = quantite_entry.get()
+            if matiere_premiere and quantite:
+                treeview.insert("", "end", values=(matiere_premiere, quantite))
+                matiere_premiere_combobox.set("")
+                quantite_entry.delete(0, tk.END)
 
-        # Bouton pour ajouter une matière première
-        tk.Button(frame_principale, text="Ajouter une Matière Première", bg=BTN_COLOR, fg=BTN_TEXT_COLOR, 
-                font=("Arial", 16), command=ajouter_matiere_premiere).pack(pady=10)
+        tk.Button(frame_principale, text="Ajouter Matière Première", bg=BTN_COLOR, fg=BTN_TEXT_COLOR, 
+                font=("Arial", 14), command=ajouter_matiere_premiere).pack(pady=10)
+
+        def ajouter():
+            matiere_produite = matiere_produite_combobox.get()
+            dosages = []
+            for item in treeview.get_children():
+                values = treeview.item(item, "values")
+                dosages.append((values[0], float(values[1])))
+
+            if not matiere_produite or not dosages:
+                messagebox.showerror("Erreur", "Veuillez remplir tous les champs.")
+                return
+
+            try:
+                ajouter_dosage(matiere_produite, dosages)
+                messagebox.showinfo("Succès", "Dosage ajouté avec succès.")
+                matiere_produite_combobox.set('')
+                treeview.delete(*treeview.get_children())
+            except Exception as e:
+                messagebox.showerror("Erreur", str(e))
+
+        tk.Button(frame_principale, text="Ajouter Dosage", bg=BTN_COLOR, fg=BTN_TEXT_COLOR, 
+                font=("Arial", 16, "bold"), command=ajouter).pack(pady=18, ipadx=18, ipady=8)
 
         # Ajouter une matière première initiale
         ajouter_matiere_premiere()
